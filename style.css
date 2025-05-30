@@ -1,0 +1,84 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #121212;
+  color: #f1f1f1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+.container {
+  width: 90%;
+  max-width: 500px;
+  background: #1f1f1f;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #ff5757;
+}
+
+.input-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #2e2e2e;
+  color: white;
+}
+
+button {
+  background: #ff5757;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: #2e2e2e;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+li.done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.cta-pro {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.cta-pro a {
+  color: #ffcc00;
+  text-decoration: none;
+  font-weight: bold;
+}
