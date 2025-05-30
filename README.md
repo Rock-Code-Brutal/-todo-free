@@ -19,7 +19,7 @@ Versi gratis dari aplikasi to-do paling brutal. Minimalis. Cepat. Brutal. Dibuat
 
 ## 🚀 Demo
 
-📲 Coba live: [https://username.github.io/todo-free](https://username.github.io/todo-free)
+📲 Coba live: [https://Rock-Code-Brutal.github.io/todo-free](https://username.github.io/todo-free)
 
 ---
 
