@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rock-Code-Brutal - Psychological Warfare To-Do List" />
+  <title>🔥 To-Do Brutal (FREE) - Survival Mode</title>
+  
+  <!-- Terminal-style Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- CRT Scanline Overlay -->
+  <div class="crt-scanlines"></div>
+  
+  <!-- Penalty Overlay for Brutal Feedback -->
+  <div class="penalty-overlay" id="penaltyOverlay">
+    <div class="insult-message" id="insultMessage"></div>
+  </div>
+
+  <!-- Main Terminal Container -->
+  <div class="terminal-container">
+    <!-- Terminal Header with Status -->
+    <div class="terminal-header">
+      <div class="terminal-status">
+        <span class="status-prefix">root@brutal:~$</span>
+        <span class="status-text" id="statusText">SYSTEM ACTIVE</span>
+      </div>
+      <div class="survival-rate-display">
+        <span class="survival-label">SURVIVAL:</span>
+        <span class="survival-value" id="survivalValue">100%</span>
+      </div>
+    </div>
+
+    <!-- Title Banner -->
+    <div class="title-banner">
+      <h1 class="brutal-title">
+        <span class="glitch-text" data-text="🔥 TO-DO BRUTAL">🔥 TO-DO BRUTAL</span>
+      </h1>
+      <p class="subtitle">COMPLETE OR DIE // FREE VERSION</p>
+    </div>
+
+    <!-- Brutal Progress Bar -->
+    <div class="brutal-progress-container">
+      <div class="progress-info">
+        <span class="progress-label">SURVIVAL RATE</span>
+        <span class="progress-percentage" id="progressPercentage">0/0</span>
+      </div>
+      <div class="brutal-progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 100%"></div>
+      </div>
+    </div>
+
+    <!-- Task Input Section -->
+    <div class="terminal-input-section">
+      <div class="terminal-prompt">
+        <span class="prompt-symbol">></span>
+        <input 
+          type="text" 
+          id="taskInput" 
+          class="terminal-input" 
+          placeholder="ENTER TASK OR DIE..."
+          autocomplete="off"
+          maxlength="100"
+        />
+      </div>
+      <button class="execute-btn" onclick="window.taskManager && taskManager.addTask()">
+        <span class="btn-text">EXECUTE</span>
+      </button>
+    </div>
+
+    <!-- Task List Display -->
+    <div class="task-list-container">
+      <div class="list-header">
+        <span class="list-title">ACTIVE MISSIONS</span>
+        <span class="task-count" id="taskCount">0 TASKS</span>
+      </div>
+      <ul id="taskList" class="task-list"></ul>
+      <div class="empty-state" id="emptyState">
+        <p class="empty-text">// NO TASKS DETECTED</p>
+        <p class="empty-subtext">Add a task to begin survival protocol</p>
+      </div>
+    </div>
+
+    <!-- Locked PRO Features Section -->
+    <div class="pro-section">
+      <div class="pro-header">
+        <span class="pro-badge">🔒 LOCKED FEATURES</span>
+      </div>
+      <div class="pro-features-grid">
+        <div class="locked-feature" onclick="window.showUpgradeModal('Drag & Drop')">
+          <div class="lock-icon">🔒</div>
+          <div class="feature-name">DRAG & DROP</div>
+          <div class="feature-desc">Reorder missions</div>
+        </div>
+        <div class="locked-feature" onclick="window.showUpgradeModal('Theme Switcher')">
+          <div class="lock-icon">🔒</div>
+          <div class="feature-name">DARK THEMES</div>
+          <div class="feature-desc">Multiple skins</div>
+        </div>
+        <div class="locked-feature" onclick="window.showUpgradeModal('PDF Export')">
+          <div class="lock-icon">🔒</div>
+          <div class="feature-name">PDF EXPORT</div>
+          <div class="feature-desc">Export missions</div>
+        </div>
+        <div class="locked-feature" onclick="window.showUpgradeModal('Encrypted Backup')">
+          <div class="lock-icon">🔒</div>
+          <div class="feature-name">CLOUD SYNC</div>
+          <div class="feature-desc">Cross-device sync</div>
+        </div>
+      </div>
+      <button class="upgrade-btn" onclick="window.location.href='https://gumroad.com/l/todopro'">
+        <span class="upgrade-text">⚡ UNLOCK BRUTAL PRO</span>
+      </button>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="terminal-footer">
+      <p class="footer-text">Storage: <span class="storage-status">ENCRYPTED</span> | Version: FREE 1.0</p>
+    </div>
+  </div>
+
+  <!-- Upgrade Modal -->
+  <div class="upgrade-modal" id="upgradeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">🔒 FEATURE LOCKED</span>
+        <button class="modal-close" onclick="window.closeUpgradeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-text" id="modalText">This feature requires BRUTAL PRO.</p>
+        <p class="modal-subtext">Unlock drag-drop, themes, export, and more.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn-primary" onclick="window.location.href='https://gumroad.com/l/todopro'">
+          UPGRADE NOW
+        </button>
+        <button class="modal-btn-secondary" onclick="window.closeUpgradeModal()">
+          STAY POOR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Audio Elements for SFX -->
+  <audio id="audioComplete" preload="auto">
+    <source src="assets/sounds/complete.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audioDelete" preload="auto">
+    <source src="assets/sounds/delete.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audioPenalty" preload="auto">
+    <source src="assets/sounds/penalty.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audioLocked" preload="auto">
+    <source src="assets/sounds/locked.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audioType" preload="auto">
+    <source src="assets/sounds/type.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
