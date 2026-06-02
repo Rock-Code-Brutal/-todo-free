@@ -183,8 +183,16 @@
 
     <!-- Footer Info -->
     <div class="terminal-footer">
-      <p class="footer-text">Storage: <span class="storage-status">ENCRYPTED</span> | Version: FREE 1.2 | <span
-          id="proBadge">FREE</span></p>
+      <p class="footer-text">Storage: <span class="storage-status">ENCRYPTED</span> | Version: <span id="versionText" style="cursor:pointer;">FREE 1.2</span> | <span id="proBadge">FREE</span></p>
+    </div>
+    <!-- Hidden Admin Panel -->
+    <div class="admin-panel" id="adminPanel" style="display:none;">
+      <div class="admin-header">🔐 ADMIN PANEL</div>
+      <div class="admin-body">
+        <input type="text" id="adminName" class="unlock-input" placeholder="NAMA CUSTOMER" />
+        <div class="admin-result" id="adminResult"></div>
+        <button class="unlock-btn" onclick="window.generateForCustomer()">GENERATE KODE</button>
+      </div>
     </div>
   </div>
 

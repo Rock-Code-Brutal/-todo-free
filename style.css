@@ -1086,6 +1086,40 @@ body {
   transition: all 0.3s ease;
 }
 
+/* === ADMIN PANEL (hidden) === */
+.admin-panel {
+  margin-top: 15px;
+  padding: 16px;
+  background: var(--terminal-tertiary);
+  border: 2px solid var(--neon-red);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.admin-header {
+  color: var(--neon-red);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.admin-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-result {
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  min-height: 1.5em;
+  word-break: break-all;
+}
+
 /* === TERMINAL FOOTER === */
 .terminal-footer {
   margin-top: 30px;

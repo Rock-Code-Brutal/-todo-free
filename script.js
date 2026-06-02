@@ -814,7 +814,25 @@ document.addEventListener('DOMContentLoaded', () => {
   window.uiController = uiController;
   window.proFeatures = ProFeatures;
   window.verifyUnlockCode = verifyUnlockCode;
-  window.generateUnlockCode = generateUnlockCode;
+  window.generateForCustomer = function() {
+    const name = document.getElementById('adminName').value.trim();
+    if (!name) return;
+    const code = generateUnlockCode(name);
+    document.getElementById('adminResult').textContent = `${name} → ${code}`;
+    document.getElementById('adminResult').style.color = 'var(--neon-green)';
+  };
+
+  // Triple-click admin panel
+  let clickCount = 0;
+  document.getElementById('versionText').addEventListener('click', () => {
+    clickCount++;
+    if (clickCount >= 3) {
+      clickCount = 0;
+      const panel = document.getElementById('adminPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+    setTimeout(() => clickCount = 0, 1000);
+  });
 
   // Check for existing unlock
   checkUnlockState();
