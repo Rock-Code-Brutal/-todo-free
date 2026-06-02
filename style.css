@@ -933,6 +933,47 @@ body {
   }
 }
 
+/* === PAYMENT MODAL === */
+.payment-details {
+  background: var(--terminal-bg);
+  border: 2px solid var(--neon-green);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 10px 0;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-label {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.payment-value {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+
+.neon-price {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 10px var(--neon-yellow);
+  font-size: 1.2rem;
+}
+
 /* === ACCESSIBILITY === */
 @media (prefers-reduced-motion: reduce) {
   *,

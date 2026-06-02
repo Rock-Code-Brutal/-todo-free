@@ -111,7 +111,7 @@
           <div class="feature-desc">Cross-device sync</div>
         </div>
       </div>
-      <button class="upgrade-btn" onclick="window.location.href='https://gumroad.com/l/todopro'">
+      <button class="upgrade-btn" onclick="window.showPaymentModal()">
         <span class="upgrade-text">⚡ UNLOCK BRUTAL PRO</span>
       </button>
     </div>
@@ -134,11 +134,54 @@
         <p class="modal-subtext">Unlock drag-drop, themes, export, and more.</p>
       </div>
       <div class="modal-actions">
-        <button class="modal-btn-primary" onclick="window.location.href='https://gumroad.com/l/todopro'">
+        <button class="modal-btn-primary" onclick="window.closeUpgradeModal(); window.showPaymentModal()">
           UPGRADE NOW
         </button>
         <button class="modal-btn-secondary" onclick="window.closeUpgradeModal()">
           STAY POOR
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="upgrade-modal" id="paymentModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">💳 BAYAR PRO</span>
+        <button class="modal-close" onclick="window.closePaymentModal()">✕</button>
+      </div>
+      <div class="modal-body" style="text-align: left;">
+        <p class="modal-text" style="text-align: center; margin-bottom: 20px;">Transfer ke rekening berikut:</p>
+        <div class="payment-details">
+          <div class="payment-row">
+            <span class="payment-label">BANK</span>
+            <span class="payment-value">BCA</span>
+          </div>
+          <div class="payment-row">
+            <span class="payment-label">NO. REKENING</span>
+            <span class="payment-value" id="paymentAccount">1234567890</span>
+          </div>
+          <div class="payment-row">
+            <span class="payment-label">ATAS NAMA</span>
+            <span class="payment-value">ROCK CODE</span>
+          </div>
+          <div class="payment-row">
+            <span class="payment-label">HARGA</span>
+            <span class="payment-value neon-price">Rp50.000</span>
+          </div>
+        </div>
+        <p style="color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 20px; border-top: 1px solid var(--text-dim); padding-top: 15px;">
+          Konfirmasi setelah transfer via WhatsApp<br>
+          <strong style="color: var(--neon-green);" id="paymentWhatsApp">+62 812-3456-7890</strong>
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn-primary" onclick="window.copyAccountNumber()">
+          COPY REKENING
+        </button>
+        <button class="modal-btn-secondary" onclick="window.closePaymentModal()">
+          TUTUP
         </button>
       </div>
     </div>

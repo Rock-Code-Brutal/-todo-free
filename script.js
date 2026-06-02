@@ -497,7 +497,62 @@ document.addEventListener('click', (e) => {
   if (e.target === modal) {
     closeUpgradeModal();
   }
+  const paymentModal = document.getElementById('paymentModal');
+  if (e.target === paymentModal) {
+    closePaymentModal();
+  }
 });
+
+// ========================================
+// PAYMENT MODAL FUNCTIONS
+// ========================================
+
+function showPaymentModal() {
+  const modal = document.getElementById('paymentModal');
+  modal.classList.add('show');
+  if (window.audioManager) {
+    audioManager.play('locked');
+  }
+}
+
+function closePaymentModal() {
+  const modal = document.getElementById('paymentModal');
+  modal.classList.remove('show');
+}
+
+function copyAccountNumber() {
+  const accountEl = document.getElementById('paymentAccount');
+  const text = accountEl.textContent.trim();
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopyFeedback('REKENING DI-COPY!');
+    }).catch(() => {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+  showCopyFeedback('REKENING DI-COPY!');
+}
+
+function showCopyFeedback(msg) {
+  const insult = document.getElementById('insultMessage');
+  insult.textContent = msg;
+  insult.classList.add('show');
+  setTimeout(() => insult.classList.remove('show'), 2000);
+}
 
 // ========================================
 // APP INITIALIZATION
