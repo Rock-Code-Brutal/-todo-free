@@ -555,6 +555,305 @@ function showCopyFeedback(msg) {
 }
 
 // ========================================
+// PRO UNLOCK SYSTEM - Name-based Permanent Code
+// ========================================
+
+const PRO_SALT = 'brut4l_r0ck_s3cr3t_2026';
+
+function generateUnlockCode(name) {
+  const input = PRO_SALT + name.toLowerCase().replace(/\s+/g, '');
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const c = input.charCodeAt(i);
+    hash = ((hash << 7) - hash) + c;
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36).toUpperCase().slice(0, 8);
+}
+
+function verifyUnlockCode() {
+  const nameInput = document.getElementById('unlockName');
+  const codeInput = document.getElementById('unlockCode');
+  const statusEl = document.getElementById('unlockStatus');
+  const name = nameInput.value.trim();
+  const code = codeInput.value.trim().toUpperCase();
+
+  if (!name || !code) {
+    statusEl.textContent = 'ISI NAMA & KODE DULU!';
+    statusEl.style.color = 'var(--neon-red)';
+    return;
+  }
+
+  const expected = generateUnlockCode(name);
+  if (code === expected) {
+    localStorage.setItem('brutal_pro_unlock', JSON.stringify({ name, code }));
+    statusEl.textContent = '✅ PRO UNLOCKED! SELAMAT KAMU RESMI BRUTAL.';
+    statusEl.style.color = 'var(--neon-green)';
+    applyProUnlock();
+    setTimeout(() => closePaymentModal(), 500);
+  } else {
+    statusEl.textContent = '❌ KODE SALAH! LO BELUM LAYAK PRO.';
+    statusEl.style.color = 'var(--neon-red)';
+    if (window.audioManager) audioManager.play('locked');
+  }
+}
+
+function checkUnlockState() {
+  try {
+    const data = JSON.parse(localStorage.getItem('brutal_pro_unlock'));
+    if (data && data.name && data.code) {
+      const expected = generateUnlockCode(data.name);
+      if (data.code === expected) {
+        document.getElementById('unlockName').value = data.name;
+        document.getElementById('unlockCode').value = data.code;
+        applyProUnlock();
+        return true;
+      }
+    }
+  } catch {}
+  return false;
+}
+
+function applyProUnlock() {
+  document.getElementById('lockedProSection').style.display = 'none';
+  document.getElementById('unlockSection').style.display = 'none';
+  document.getElementById('unlockedProSection').style.display = 'block';
+  document.getElementById('proBadge').textContent = 'PRO';
+  document.getElementById('proBadge').style.color = '#00ff00';
+  document.getElementById('proBadge').style.textShadow = '0 0 5px #00ff00';
+  document.querySelector('.subtitle').textContent = 'COMPLETE OR DIE // PRO EDITION';
+
+  window.isProUnlocked = true;
+
+  // Enable drag & drop on tasks
+  enableDragDrop();
+}
+
+// ========================================
+// PRO FEATURES
+// ========================================
+
+const PRO_THEMES = {
+  default: {
+    '--terminal-bg': '#0a0a0a',
+    '--terminal-secondary': '#121212',
+    '--terminal-tertiary': '#1a1a1a',
+    '--neon-green': '#00ff00',
+    '--neon-red': '#ff0040',
+    '--neon-cyan': '#00ffff',
+    '--neon-yellow': '#ffff00',
+    '--neon-orange': '#ff6600',
+    '--text-primary': '#e0e0e0',
+    '--text-secondary': '#a0a0a0',
+    '--text-dim': '#606060',
+    '--border-glow': 'rgba(0, 255, 0, 0.3)',
+  },
+  night: {
+    '--terminal-bg': '#0d1117',
+    '--terminal-secondary': '#161b22',
+    '--terminal-tertiary': '#21262d',
+    '--neon-green': '#58a6ff',
+    '--neon-red': '#f85149',
+    '--neon-cyan': '#79c0ff',
+    '--neon-yellow': '#d29922',
+    '--neon-orange': '#db6d28',
+    '--text-primary': '#c9d1d9',
+    '--text-secondary': '#8b949e',
+    '--text-dim': '#484f58',
+    '--border-glow': 'rgba(88, 166, 255, 0.3)',
+  },
+  cyberpunk: {
+    '--terminal-bg': '#0a0015',
+    '--terminal-secondary': '#12002a',
+    '--terminal-tertiary': '#1c0040',
+    '--neon-green': '#ff00ff',
+    '--neon-red': '#ff0080',
+    '--neon-cyan': '#00ffff',
+    '--neon-yellow': '#ffff00',
+    '--neon-orange': '#ff6600',
+    '--text-primary': '#e0d0ff',
+    '--text-secondary': '#a080d0',
+    '--text-dim': '#604080',
+    '--border-glow': 'rgba(255, 0, 255, 0.3)',
+  },
+  blood: {
+    '--terminal-bg': '#1a0000',
+    '--terminal-secondary': '#240000',
+    '--terminal-tertiary': '#2e0000',
+    '--neon-green': '#ff0000',
+    '--neon-red': '#ff6600',
+    '--neon-cyan': '#ff4444',
+    '--neon-yellow': '#ff8800',
+    '--neon-orange': '#ff4400',
+    '--text-primary': '#ffcccc',
+    '--text-secondary': '#cc8888',
+    '--text-dim': '#884444',
+    '--border-glow': 'rgba(255, 0, 0, 0.3)',
+  },
+};
+
+class ProFeatures {
+  static toggleTheme() {
+    const panel = document.getElementById('themePanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  }
+
+  static setTheme(name) {
+    const theme = PRO_THEMES[name];
+    if (!theme) return;
+    const root = document.documentElement;
+    Object.entries(theme).forEach(([key, val]) => {
+      root.style.setProperty(key, val);
+    });
+    localStorage.setItem('brutal_pro_theme', name);
+    document.querySelectorAll('.theme-option').forEach(el => {
+      el.classList.toggle('active', el.dataset.theme === name);
+    });
+  }
+
+  static loadTheme() {
+    const saved = localStorage.getItem('brutal_pro_theme');
+    if (saved && PRO_THEMES[saved]) {
+      ProFeatures.setTheme(saved);
+    }
+  }
+
+  static exportPDF() {
+    const tasks = window.taskManager.tasks;
+    const completed = tasks.filter(t => t.done).length;
+    const total = tasks.length;
+    const rate = total === 0 ? 100 : Math.round((completed / total) * 100);
+
+    const win = window.open('', '_blank');
+    win.document.write(`<!DOCTYPE html>
+<html><head><title>To-Do Brutal PRO - Export</title>
+<style>
+  body { font-family: 'Courier New', monospace; padding: 40px; color: #222; }
+  h1 { color: #c00; font-size: 24px; border-bottom: 2px solid #c00; padding-bottom: 10px; }
+  .stats { margin: 20px 0; padding: 15px; background: #f5f5f5; border-left: 4px solid #c00; }
+  .task { padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; }
+  .task.done { color: #999; text-decoration: line-through; }
+  .index { color: #999; margin-right: 10px; }
+  .footer { margin-top: 30px; font-size: 12px; color: #999; text-align: center; }
+</style></head>
+<body>
+<h1>🔥 TO-DO BRUTAL PRO - MISSION REPORT</h1>
+<div class="stats"><strong>Survival Rate:</strong> ${rate}% | <strong>Completed:</strong> ${completed}/${total}</div>
+${tasks.map((t, i) => `<div class="task ${t.done ? 'done' : ''}"><span><span class="index">#${i + 1}</span>${t.text}</span><span>${t.done ? '✓' : '○'}</span></div>`).join('')}
+<div class="footer">Generated by To-Do Brutal PRO — ${new Date().toLocaleDateString()}</div>
+<script>window.print();<\/script>
+</body></html>`);
+    win.document.close();
+  }
+
+  static exportJSON() {
+    const data = JSON.stringify(window.taskManager.tasks, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brutal-tasks-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  static importJSON() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (!Array.isArray(data)) throw new Error();
+          window.taskManager.tasks = data;
+          window.taskManager.save();
+          window.taskManager.render();
+          const status = document.getElementById('unlockStatus');
+          status.textContent = '✅ DATA DI-IMPORT!';
+          status.style.color = 'var(--neon-green)';
+        } catch {
+          const status = document.getElementById('unlockStatus');
+          status.textContent = '❌ FILE INVALID!';
+          status.style.color = 'var(--neon-red)';
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+}
+
+// ========================================
+// DRAG & DROP (PRO only)
+// ========================================
+
+function enableDragDrop() {
+  const list = document.getElementById('taskList');
+  let dragIndex = null;
+
+  list.addEventListener('dragstart', (e) => {
+    const li = e.target.closest('.task-item');
+    if (!li) return;
+    dragIndex = parseInt(li.dataset.index);
+    li.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  list.addEventListener('dragend', (e) => {
+    const li = e.target.closest('.task-item');
+    if (li) li.classList.remove('dragging');
+    document.querySelectorAll('.task-item').forEach(el => el.classList.remove('drag-over'));
+  });
+
+  list.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const li = e.target.closest('.task-item');
+    if (li && !li.classList.contains('dragging')) {
+      li.classList.add('drag-over');
+    }
+  });
+
+  list.addEventListener('dragleave', (e) => {
+    const li = e.target.closest('.task-item');
+    if (li) li.classList.remove('drag-over');
+  });
+
+  list.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const li = e.target.closest('.task-item');
+    if (!li || dragIndex === null) return;
+    const toIndex = parseInt(li.dataset.index);
+    li.classList.remove('drag-over');
+    if (dragIndex !== toIndex) {
+      const [moved] = window.taskManager.tasks.splice(dragIndex, 1);
+      window.taskManager.tasks.splice(toIndex, 0, moved);
+      window.taskManager.save();
+      window.taskManager.render();
+    }
+    dragIndex = null;
+  });
+}
+
+// ========================================
+// OVERRIDE renderTasks to add drag support when PRO
+// ========================================
+
+const _origRenderTasks = UIController.prototype.renderTasks;
+UIController.prototype.renderTasks = function(tasks) {
+  _origRenderTasks.call(this, tasks);
+  if (window.isProUnlocked) {
+    document.querySelectorAll('.task-item').forEach(el => {
+      el.draggable = true;
+      el.style.cursor = 'grab';
+    });
+  }
+};
+
+// ========================================
 // APP INITIALIZATION
 // ========================================
 
@@ -569,6 +868,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.audioManager = audioManager;
   window.taskManager = taskManager;
   window.uiController = uiController;
+  window.proFeatures = ProFeatures;
+  window.verifyUnlockCode = verifyUnlockCode;
+
+  // Check for existing unlock
+  checkUnlockState();
+  ProFeatures.loadTheme();
   
   // Log startup
   console.log('%c🔥 ROCK-CODE-BRUTAL INITIALIZED', 'color: #00ff00; font-size: 16px; font-weight: bold;');
