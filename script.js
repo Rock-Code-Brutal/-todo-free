@@ -11,9 +11,6 @@
 // ========================================
 
 const CONFIG = {
-  TASK_DEADLINE_MINUTES: 30,
-  PENALTY_CHECK_INTERVAL: 30000, // 30 seconds
-  MAX_PENALTY_LEVEL: 5,
   STORAGE_KEY: 'brutal_tasks_encrypted',
   AUDIO_VOLUME: 0.3,
 };
@@ -149,7 +146,6 @@ class AudioManager {
     this.sounds = {
       complete: document.getElementById('audioComplete'),
       delete: document.getElementById('audioDelete'),
-      penalty: document.getElementById('audioPenalty'),
       locked: document.getElementById('audioLocked'),
       type: document.getElementById('audioType'),
     };
@@ -182,97 +178,6 @@ class AudioManager {
 }
 
 // ========================================
-// PENALTY SYSTEM - Brutal Negative Gamification
-// ========================================
-
-class PenaltySystem {
-  constructor(uiController, audioManager) {
-    this.uiController = uiController;
-    this.audioManager = audioManager;
-    this.penaltyLevel = 0;
-    this.maxPenalty = CONFIG.MAX_PENALTY_LEVEL;
-  }
-
-  /**
-   * Check for overdue tasks and apply penalties
-   */
-  checkOverdueTasks(tasks) {
-    const overdueTasks = tasks.filter(task => {
-      if (task.done) return false;
-      const deadline = new Date(task.deadline);
-      return deadline < new Date();
-    });
-
-    if (overdueTasks.length > 0) {
-      this.escalatePenalty();
-      return overdueTasks.length;
-    } else {
-      this.resetPenalty();
-      return 0;
-    }
-  }
-
-  /**
-   * Escalate penalty level
-   */
-  escalatePenalty() {
-    if (this.penaltyLevel < this.maxPenalty) {
-      this.penaltyLevel++;
-    }
-    
-    this.applyVisualPenalty();
-    
-    // Show insult every other escalation
-    if (this.penaltyLevel % 2 === 0) {
-      const insult = InsultGenerator.getRandomInsult();
-      this.uiController.showInsult(insult);
-      this.audioManager.play('penalty');
-    }
-  }
-
-  /**
-   * Reset penalty to zero
-   */
-  resetPenalty() {
-    this.penaltyLevel = 0;
-    this.uiController.hidePenalty();
-  }
-
-  /**
-   * Apply visual penalty based on level
-   */
-  applyVisualPenalty() {
-    const overlay = document.getElementById('penaltyOverlay');
-    
-    switch(this.penaltyLevel) {
-      case 1:
-        // Subtle warning
-        overlay.style.backgroundColor = 'rgba(255, 204, 0, 0.05)';
-        break;
-      case 2:
-        // Yellow flash
-        overlay.style.backgroundColor = 'rgba(255, 204, 0, 0.1)';
-        break;
-      case 3:
-        // Orange warning
-        overlay.style.backgroundColor = 'rgba(255, 102, 0, 0.15)';
-        overlay.classList.add('active');
-        break;
-      case 4:
-        // Red danger
-        overlay.style.backgroundColor = 'rgba(255, 0, 64, 0.2)';
-        overlay.classList.add('active');
-        break;
-      case 5:
-        // Maximum penalty
-        overlay.style.backgroundColor = 'rgba(255, 0, 64, 0.3)';
-        overlay.classList.add('active');
-        break;
-    }
-  }
-}
-
-// ========================================
 // UI CONTROLLER - All UI Updates & Animations
 // ========================================
 
@@ -288,7 +193,6 @@ class UIController {
       progressFill: document.getElementById('progressFill'),
       progressPercentage: document.getElementById('progressPercentage'),
       statusText: document.getElementById('statusText'),
-      penaltyOverlay: document.getElementById('penaltyOverlay'),
       insultMessage: document.getElementById('insultMessage'),
     };
   }
@@ -325,15 +229,6 @@ class UIController {
       li.classList.add('completed');
     }
     
-    // Check if overdue
-    const deadline = new Date(task.deadline);
-    const now = new Date();
-    const isOverdue = deadline < now && !task.done;
-    
-    if (isOverdue) {
-      li.classList.add('overdue');
-    }
-    
     // Task content
     const content = document.createElement('div');
     content.className = 'task-content';
@@ -343,29 +238,7 @@ class UIController {
     text.className = 'task-text';
     text.textContent = task.text;
     
-    const meta = document.createElement('div');
-    meta.className = 'task-meta';
-    
-    // Deadline display
-    const deadlineSpan = document.createElement('span');
-    deadlineSpan.className = 'task-deadline';
-    const timeLeft = this.getTimeLeftString(deadline);
-    deadlineSpan.textContent = `⏱ ${timeLeft}`;
-    
-    // Color code based on urgency
-    const minutesLeft = (deadline - now) / 60000;
-    if (minutesLeft < 0) {
-      deadlineSpan.classList.add('critical');
-      deadlineSpan.textContent = `⏱ OVERDUE`;
-    } else if (minutesLeft < 10) {
-      deadlineSpan.classList.add('critical');
-    } else if (minutesLeft < 20) {
-      deadlineSpan.classList.add('warning');
-    }
-    
-    meta.appendChild(deadlineSpan);
     content.appendChild(text);
-    content.appendChild(meta);
     
     // Task actions
     const actions = document.createElement('div');
@@ -394,21 +267,6 @@ class UIController {
     li.appendChild(actions);
     
     return li;
-  }
-
-  /**
-   * Get time left as readable string
-   */
-  getTimeLeftString(deadline) {
-    const now = new Date();
-    const diff = deadline - now;
-    const minutes = Math.floor(diff / 60000);
-    
-    if (minutes < 0) return 'OVERDUE';
-    if (minutes < 60) return `${minutes}m left`;
-    
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ${minutes % 60}m left`;
   }
 
   /**
@@ -475,15 +333,6 @@ class UIController {
   }
 
   /**
-   * Hide penalty overlay
-   */
-  hidePenalty() {
-    const overlay = this.elements.penaltyOverlay;
-    overlay.style.backgroundColor = 'rgba(255, 0, 64, 0)';
-    overlay.classList.remove('active');
-  }
-
-  /**
    * Clear input field
    */
   clearInput() {
@@ -504,15 +353,13 @@ class UIController {
 // ========================================
 
 class TaskManager {
-  constructor(uiController, audioManager, penaltySystem) {
+  constructor(uiController, audioManager) {
     this.tasks = StorageManager.load();
     this.uiController = uiController;
     this.audioManager = audioManager;
-    this.penaltySystem = penaltySystem;
     
     // Initialize
     this.render();
-    this.startPenaltyTimer();
     
     // Add enter key listener
     document.getElementById('taskInput').addEventListener('keypress', (e) => {
@@ -531,14 +378,9 @@ class TaskManager {
     
     if (text === '') return;
     
-    // Calculate deadline
-    const deadline = new Date();
-    deadline.setMinutes(deadline.getMinutes() + CONFIG.TASK_DEADLINE_MINUTES);
-    
     const newTask = {
       text: text,
       done: false,
-      deadline: deadline.toISOString(),
       createdAt: new Date().toISOString(),
     };
     
@@ -611,33 +453,10 @@ class TaskManager {
     const total = this.tasks.length;
     const completed = this.tasks.filter(t => t.done).length;
     
-    // Survival rate calculation
-    const overdueTasks = this.tasks.filter(task => {
-      if (task.done) return false;
-      const deadline = new Date(task.deadline);
-      return deadline < new Date();
-    }).length;
-    
-    let survivalRate = 100;
-    if (total > 0) {
-      survivalRate = ((completed / total) * 100) - (overdueTasks * 20);
-      survivalRate = Math.max(0, Math.min(100, survivalRate));
-    }
+    let survivalRate = total === 0 ? 100 : (completed / total) * 100;
     
     this.uiController.updateSurvivalRate(survivalRate);
     this.uiController.updateProgressBar(completed, total);
-  }
-
-  /**
-   * Start penalty check timer
-   */
-  startPenaltyTimer() {
-    setInterval(() => {
-      const overdueCount = this.penaltySystem.checkOverdueTasks(this.tasks);
-      if (overdueCount > 0) {
-        this.render(); // Update UI to show overdue status
-      }
-    }, CONFIG.PENALTY_CHECK_INTERVAL);
   }
 
   /**
@@ -689,18 +508,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Create instances
   const audioManager = new AudioManager();
   const uiController = new UIController(audioManager);
-  const penaltySystem = new PenaltySystem(uiController, audioManager);
-  const taskManager = new TaskManager(uiController, audioManager, penaltySystem);
+  const taskManager = new TaskManager(uiController, audioManager);
   
   // Make globally accessible
   window.audioManager = audioManager;
   window.taskManager = taskManager;
   window.uiController = uiController;
-  window.penaltySystem = penaltySystem;
   
   // Log startup
   console.log('%c🔥 ROCK-CODE-BRUTAL INITIALIZED', 'color: #00ff00; font-size: 16px; font-weight: bold;');
-  console.log('%cStorage: Encrypted | Penalty System: Active', 'color: #00ffff; font-size: 12px;');
+  console.log('%cStorage: Encrypted | System: Active', 'color: #00ffff; font-size: 12px;');
 });
 
 // ========================================
@@ -711,7 +528,6 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     TaskManager,
     UIController,
-    PenaltySystem,
     StorageManager,
     InsultGenerator,
     AudioManager,
