@@ -12,7 +12,6 @@
 
 const CONFIG = {
   STORAGE_KEY: 'brutal_tasks_encrypted',
-  AUDIO_VOLUME: 0.3,
 };
 
 const BRUTAL_INSULTS = [
@@ -138,52 +137,11 @@ class InsultGenerator {
 }
 
 // ========================================
-// AUDIO MANAGER - Sound Effects Controller
-// ========================================
-
-class AudioManager {
-  constructor() {
-    this.sounds = {
-      complete: document.getElementById('audioComplete'),
-      delete: document.getElementById('audioDelete'),
-      locked: document.getElementById('audioLocked'),
-      type: document.getElementById('audioType'),
-    };
-    
-    this.setVolume(CONFIG.AUDIO_VOLUME);
-  }
-
-  /**
-   * Play a sound effect
-   */
-  play(soundName) {
-    const audio = this.sounds[soundName];
-    if (audio) {
-      audio.currentTime = 0;
-      audio.play().catch(err => {
-        // Audio playback failed (usually due to autoplay policy)
-        console.log('Audio playback prevented:', err.message);
-      });
-    }
-  }
-
-  /**
-   * Set volume for all sounds
-   */
-  setVolume(level) {
-    Object.values(this.sounds).forEach(audio => {
-      if (audio) audio.volume = level;
-    });
-  }
-}
-
-// ========================================
 // UI CONTROLLER - All UI Updates & Animations
 // ========================================
 
 class UIController {
-  constructor(audioManager) {
-    this.audioManager = audioManager;
+  constructor() {
     this.elements = {
       taskList: document.getElementById('taskList'),
       taskInput: document.getElementById('taskInput'),
@@ -353,10 +311,9 @@ class UIController {
 // ========================================
 
 class TaskManager {
-  constructor(uiController, audioManager) {
+  constructor(uiController) {
     this.tasks = StorageManager.load();
     this.uiController = uiController;
-    this.audioManager = audioManager;
     
     // Initialize
     this.render();
@@ -388,7 +345,6 @@ class TaskManager {
     this.save();
     this.render();
     this.uiController.clearInput();
-    this.audioManager.play('type');
     
     this.uiController.updateStatus('TASK ADDED');
     setTimeout(() => this.uiController.updateStatus('SYSTEM ACTIVE'), 2000);
@@ -405,7 +361,7 @@ class TaskManager {
       // Task completed - trigger glitch and taunt
       const taskElement = document.querySelectorAll('.task-item')[index];
       this.uiController.triggerGlitch(taskElement);
-      this.audioManager.play('complete');
+      
       
       // Random completion taunt
       if (Math.random() > 0.5) {
@@ -423,7 +379,6 @@ class TaskManager {
    */
   deleteTask(index) {
     this.tasks.splice(index, 1);
-    this.audioManager.play('delete');
     this.save();
     this.render();
     
@@ -479,11 +434,6 @@ function showUpgradeModal(featureName) {
   
   modalText.textContent = `"${featureName}" is locked in FREE version.`;
   modal.classList.add('show');
-  
-  // Play locked sound
-  if (window.audioManager) {
-    audioManager.play('locked');
-  }
 }
 
 function closeUpgradeModal() {
@@ -510,9 +460,6 @@ document.addEventListener('click', (e) => {
 function showPaymentModal() {
   const modal = document.getElementById('paymentModal');
   modal.classList.add('show');
-  if (window.audioManager) {
-    audioManager.play('locked');
-  }
 }
 
 function closePaymentModal() {
@@ -594,7 +541,6 @@ function verifyUnlockCode() {
   } else {
     statusEl.textContent = '❌ KODE SALAH! LO BELUM LAYAK PRO.';
     statusEl.style.color = 'var(--neon-red)';
-    if (window.audioManager) audioManager.play('locked');
   }
 }
 
@@ -860,12 +806,10 @@ UIController.prototype.renderTasks = function(tasks) {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   // Create instances
-  const audioManager = new AudioManager();
-  const uiController = new UIController(audioManager);
-  const taskManager = new TaskManager(uiController, audioManager);
+  const uiController = new UIController();
+  const taskManager = new TaskManager(uiController);
   
   // Make globally accessible
-  window.audioManager = audioManager;
   window.taskManager = taskManager;
   window.uiController = uiController;
   window.proFeatures = ProFeatures;
@@ -890,6 +834,5 @@ if (typeof module !== 'undefined' && module.exports) {
     UIController,
     StorageManager,
     InsultGenerator,
-    AudioManager,
   };
 }
