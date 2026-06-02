@@ -814,6 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.uiController = uiController;
   window.proFeatures = ProFeatures;
   window.verifyUnlockCode = verifyUnlockCode;
+  window.generateUnlockCode = generateUnlockCode;
 
   // Check for existing unlock
   checkUnlockState();
