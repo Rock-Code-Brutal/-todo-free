@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Rock-Code-Brutal - Psychological Warfare To-Do List" />
   <title>🔥 To-Do Brutal (FREE) - Survival Mode</title>
-  
+
   <!-- Terminal-style Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Roboto+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <!-- CRT Scanline Overlay -->
   <div class="crt-scanlines"></div>
-  
+
   <!-- Insult Message Overlay -->
   <div class="insult-message" id="insultMessage"></div>
 
@@ -57,14 +61,8 @@
     <div class="terminal-input-section">
       <div class="terminal-prompt">
         <span class="prompt-symbol">></span>
-        <input 
-          type="text" 
-          id="taskInput" 
-          class="terminal-input" 
-          placeholder="ENTER TASK OR DIE..."
-          autocomplete="off"
-          maxlength="100"
-        />
+        <input type="text" id="taskInput" class="terminal-input" placeholder="ENTER TASK OR DIE..." autocomplete="off"
+          maxlength="100" />
       </div>
       <button class="execute-btn" onclick="window.taskManager && taskManager.addTask()">
         <span class="btn-text">EXECUTE</span>
@@ -119,7 +117,9 @@
     <!-- Unlocked PRO Features Section (hidden until unlock) -->
     <div class="pro-section pro-unlocked" id="unlockedProSection" style="display:none;">
       <div class="pro-header">
-        <span class="pro-badge" style="border-color: var(--neon-green); color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);">🔥 PRO UNLOCKED</span>
+        <span class="pro-badge"
+          style="border-color: var(--neon-green); color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);">🔥
+          PRO UNLOCKED</span>
       </div>
       <div class="pro-toolbar-grid">
         <button class="pro-tool-btn" onclick="window.proFeatures.toggleTheme()">
@@ -171,8 +171,10 @@
       <div class="unlock-body">
         <p class="unlock-desc">Masukin nama & kode yang lo dapet dari admin buat unlock PRO:</p>
         <div class="unlock-input-group">
-          <input type="text" id="unlockName" class="unlock-input" placeholder="NAMA LO" maxlength="30" autocomplete="off" />
-          <input type="text" id="unlockCode" class="unlock-input" placeholder="KODE PRO" maxlength="20" autocomplete="off" />
+          <input type="text" id="unlockName" class="unlock-input" placeholder="NAMA LO" maxlength="30"
+            autocomplete="off" />
+          <input type="text" id="unlockCode" class="unlock-input" placeholder="KODE PRO" maxlength="20"
+            autocomplete="off" />
           <button class="unlock-btn" onclick="window.verifyUnlockCode()">UNLOCK</button>
         </div>
         <p class="unlock-status" id="unlockStatus"></p>
@@ -181,7 +183,8 @@
 
     <!-- Footer Info -->
     <div class="terminal-footer">
-      <p class="footer-text">Storage: <span class="storage-status">ENCRYPTED</span> | Version: FREE 1.2 | <span id="proBadge">FREE</span></p>
+      <p class="footer-text">Storage: <span class="storage-status">ENCRYPTED</span> | Version: FREE 1.2 | <span
+          id="proBadge">FREE</span></p>
     </div>
   </div>
 
@@ -234,9 +237,10 @@
             <span class="payment-value neon-price">Rp50.000</span>
           </div>
         </div>
-        <p style="color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 20px; border-top: 1px solid var(--text-dim); padding-top: 15px;">
-          Konfirmasi setelah transfer via WhatsApp<br>
-          <strong style="color: var(--neon-green);" id="paymentWhatsApp">+62 812-3456-7890</strong>
+        <p
+          style="color: var(--text-dim); font-size: 0.85rem; text-align: center; margin-top: 20px; border-top: 1px solid var(--text-dim); padding-top: 15px;">
+          Konfirmasi setelah transfer via IG:<br>
+          <strong style="color: var(--neon-green);" id="paymentWhatsApp">@rockerpiano</strong>
         </p>
       </div>
       <div class="modal-actions">
@@ -266,4 +270,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
